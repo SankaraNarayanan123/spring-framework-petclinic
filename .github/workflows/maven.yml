@@ -52,8 +52,8 @@ jobs:
         java-version: ${{matrix.java}}
         distribution: 'adopt'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml -Djacoco.skip=true -Dsurefire.useFile=false -DdisableXmlReport=true
+    - name: Build with Maven      
+      run: mvn package --file pom.xml
 # added by R.SankaraNarayanan Ends
 # Deploy to Microsoft Azure Cloud by R.SankaraNarayanan Starts
     - name: 'Deploy to Azure WebApp'
