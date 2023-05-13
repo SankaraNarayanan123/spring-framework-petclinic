@@ -1,29 +1,44 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
-
+name: Java CI with Maven and Deploy Java War package to Azure web app
+    
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
+    
+env:
+      AZURE_WEBAPP_NAME: spring-framework-petclinic  # set this to your application's name
+      AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }} # set this to the path to your web app project      
+      # AZURE_WEBAPP_PUBLISH_PROFILE: ${{ github.secret_source.AZURE_WEBAPP_PUBLISH_PROFILE }}     # set GH repo secret with the publish profile of the web app
+      AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}     # set GH repo secret with the publish profile of the web app
+    
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment: dev
     strategy:
       matrix:
         java: [ '17', '19' ]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK ${{matrix.java}}
-      uses: actions/setup-java@v2
-      with:
-        java-version: ${{matrix.java}}
-        distribution: 'adopt'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml -Djacoco.skip=true -Dsurefire.useFile=false -DdisableXmlReport=true
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{matrix.java}}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{matrix.java}}
+          distribution: 'adopt'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml -Djacoco.skip=true -Dsurefire.useFile=false -DdisableXmlReport=true
+      - name: 'Deploy to Azure WebApp'
+        uses: azure/webapps-deploy@v2        
+        with:
+            app-name: ${{ env.AZURE_WEBAPP_NAME }}
+            publish-profile: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE }}
+            package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/target/*.war'
+ # Deploy to Microsoft Azure Cloud by R.SankaraNarayanan Ends        
+ # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
