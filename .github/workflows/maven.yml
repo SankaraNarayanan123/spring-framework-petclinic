@@ -52,7 +52,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven      
-      run: mvn package --file pom.xml
+      run: mvn package --file pom.xml -P MySQL
 # added by R.SankaraNarayanan Ends
 # Deploy to Microsoft Azure Cloud by R.SankaraNarayanan Starts
     - name: 'Deploy to Azure WebApp'
